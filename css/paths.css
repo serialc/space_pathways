@@ -15,21 +15,10 @@ body {
 	padding: 20px;
 }
 
-#main > div {
-	margin: 30px 0;
-}
-
 input {
 	height: 30px;
 	width: 180px;
 }
 
-#command {
-	height: 90px;
-}
-
-.fr {
-	float: right;
-	clear: right;
-	margin-top: 7px;
+#svgcanvas {
 }

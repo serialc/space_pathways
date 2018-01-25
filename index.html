@@ -20,12 +20,25 @@
 			</div>
 
 			<div id='command'>
-				<input type='button' onclick='PA.prep()' value='Randomize paths'>
-				<div class='fr'><span>Cell size: </span><input type='button' onclick='mod_cell_size("s")' value='smaller'><input type='button' onclick='mod_cell_size("B")' value='BIGGER'></div>
-				<div class='fr'><span>Canvas width: </span><input type='button' onclick='mod_canvas("n")' value='narrower'><input type='button' onclick='mod_canvas("W")' value='WIDER'></div>
+                <p>
+                    Cell size:<br>
+                    <input type='button' onclick='mod_cell_size("sc")' value='smaller'> <input type='button' onclick='mod_cell_size("lc")' value='larger'>
+                </p>
+                <p>
+                    Canvas width: <span id='cwval'></span><br>
+                    <input type='button' onclick='mod_canvas("dw")' value='decrease width'> <input type='button' onclick='mod_canvas("iw")' value='increase width'>
+                </p>
+                <p>
+                    Canvas height: <span id='chval'></span><br>
+                    <input type='button' onclick='mod_canvas("dh")' value='decrease height'> <input type='button' onclick='mod_canvas("ih")' value='increase height'>
+                </p>
+                <p>
+                    Randomize: <input type='button' onclick='PA.prep()' value='Randomize paths'>
+                </p>
 			</div>
-			<div id='svgcanvas'>
-			</div>
+
+			<div id='svgcanvas'></div>
+
 			<form method="POST" action="export.php">
 				<input id="svgexport" type="hidden" value="" name="content">
 				<input type='submit' value='Export SVG'>
@@ -40,11 +53,11 @@
 		var cols, s = PA.parameters.cell_size;
 
 		// grow and shrinks cells, check limits
-		if ( op === 'B' && s < 128 ) {
+		if ( op === 'lc' && s < 128 ) {
 			PA.parameters.cell_size = s * 2;
 		}
 
-		if ( op === 's' && s > 4 ) {
+		if ( op === 'sc' && s > 4 ) {
 			PA.parameters.cell_size = s / 2;
 		}
 
@@ -61,13 +74,20 @@
 
 	var mod_canvas = function (op) {
 
-		if ( op === 'W' && (PA.parameters.dimension.w + PA.parameters.cell_size) < 900 ) {
+		if ( op === 'iw' && (PA.parameters.dimension.w + PA.parameters.cell_size) < 900 ) {
 			PA.parameters.dimension.w = PA.parameters.dimension.w + PA.parameters.cell_size;
 		}
 
-		if ( op === 'n' && PA.parameters.dimension.w > 128 ) {
+		if ( op === 'dw' && PA.parameters.dimension.w > 128 ) {
 			PA.parameters.dimension.w = PA.parameters.dimension.w - PA.parameters.cell_size;
 		}
+		if ( op === 'ih' && (PA.parameters.dimension.h + PA.parameters.cell_size) < 900 ) {
+			PA.parameters.dimension.h = PA.parameters.dimension.h + PA.parameters.cell_size;
+		}
+
+		if ( op === 'dh' && PA.parameters.dimension.h > 128 ) {
+			PA.parameters.dimension.h = PA.parameters.dimension.h - PA.parameters.cell_size;
+        }
 		PA.prep();
 	}
 
