@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Paths</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+ <link media='screen' type='text/css' href='css/paths.css' rel='stylesheet'>
+ <script src="js/d3.v3.min.js"> </script>
+ <script src="js/paths.js"> </script>
+</head>
+<body>
+	<div id='cont'>
+		<div id='header'>
+			<h1>Paths</h1>
+		</div>
+
+		<div id='main'>
+			<div id='intro'>
+				<p>Paths was born from work looking at space filling algorithms. It turned out to be a nice random pattern generator. Play around with the parameters and when satisfied export to a graphics program where you can adjust colours and line thickness.</p>
+				<p>Additionally you may notice that the line paths mirror/wrap perfectly in all directions. The black outline shows the clip line where the lines wrap to the other side. The exported SVG file still has this rectangle which you should remove if you plan on using the SVG for tiling as was done for the background of this page. The black outline is useful however to precisely show where to crop the image if you are using a graphics editor.</p>
+			</div>
+
+			<div id='command'>
+				<input type='button' onclick='PA.prep()' value='Randomize paths'>
+				<div class='fr'><span>Cell size: </span><input type='button' onclick='mod_cell_size("s")' value='smaller'><input type='button' onclick='mod_cell_size("B")' value='BIGGER'></div>
+				<div class='fr'><span>Canvas width: </span><input type='button' onclick='mod_canvas("n")' value='narrower'><input type='button' onclick='mod_canvas("W")' value='WIDER'></div>
+			</div>
+			<div id='svgcanvas'>
+			</div>
+			<form method="POST" action="export.php">
+				<input id="svgexport" type="hidden" value="" name="content">
+				<input type='submit' value='Export SVG'>
+			</form>
+			<p><small>Created by Cyrille Médard de Chardon - 2013</small></p>
+		</div>
+	</div>
+</body>
+<script>
+
+	var mod_cell_size = function (op) {
+		var cols, s = PA.parameters.cell_size;
+
+		// grow and shrinks cells, check limits
+		if ( op === 'B' && s < 128 ) {
+			PA.parameters.cell_size = s * 2;
+		}
+
+		if ( op === 's' && s > 4 ) {
+			PA.parameters.cell_size = s / 2;
+		}
+
+		// check cell size against canvas size
+		if ( PA.parameters.dimension.w % PA.parameters.cell_size != 0 ) {
+			PA.parameters.dimension.w = PA.parameters.cell_size * parseInt(PA.parameters.dimension.w / PA.parameters.cell_size, 10);
+		}
+		if ( PA.parameters.dimension.h % PA.parameters.cell_size != 0 ) {
+			PA.parameters.dimension.h = PA.parameters.cell_size * parseInt(PA.parameters.dimension.h / PA.parameters.cell_size, 10);
+		}
+
+		PA.prep();
+	}
+
+	var mod_canvas = function (op) {
+
+		if ( op === 'W' && (PA.parameters.dimension.w + PA.parameters.cell_size) < 900 ) {
+			PA.parameters.dimension.w = PA.parameters.dimension.w + PA.parameters.cell_size;
+		}
+
+		if ( op === 'n' && PA.parameters.dimension.w > 128 ) {
+			PA.parameters.dimension.w = PA.parameters.dimension.w - PA.parameters.cell_size;
+		}
+		PA.prep();
+	}
+
+	// draw the starting circuit
+	PA.prep();
+
+</script>
+</html>
