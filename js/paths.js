@@ -3,17 +3,46 @@
 
 //global object
 PA = {
-	'export': '',
-	parameters: {
-		dimension: {
-			w: 320,
-			h: 320},
-		cell_size: 16,
-		line_width: 3,
-		line_colour: 'blue'}
-	};
+	"export": '',
+	"parameters": {
+		"dimension": { // starting size
+			"w": 480,
+			"h": 320},
+		"cell_size": 16,
+		"line_width": 3,
+        "palettes": {
+            "blue": ['blue'],
+            "red_eye": ['red', 'blue'],
+            "rainbow": [
+                '#9400D3',
+                '#0000FF',
+                '#00FF00',
+                '#FFFF00',
+                '#FF7F00',
+                '#FF0000'
+            ],
+            "brewer": [
+                '#a6cee3',
+                '#1f78b4',
+                '#b2df8a',
+                '#33a02c',
+                '#fb9a99',
+                '#e31a1c',
+                '#fdbf6f'],
+            "saturation": [
+                '#1b9e77',
+                '#d95f02',
+                '#7570b3',
+                '#e7298a',
+                '#66a61e',
+                '#e6ab02',
+                '#a6761d']
+        },
+        "style": 'rainbow' // default starting palette
+    }
+};
 
-PA.drawBiline = function( x , y ) {
+PA.drawBiline = function( x, y, line_colour ) {
 	var p, dir, line1_points, line2_points, biline_points;
 
 	// create head point
@@ -47,7 +76,7 @@ PA.drawBiline = function( x , y ) {
 	// merge both lines together
 	biline_points = PA.merge_lines( line1_points, line2_points );
 
-	PA.drawLine( biline_points );
+	PA.drawLine( biline_points, line_colour );
 };
 
 PA.merge_lines = function( l1, l2 ) {
@@ -87,7 +116,7 @@ PA.merge_lines = function( l1, l2 ) {
 
 };
 
-PA.drawLine = function( path_points ) {
+PA.drawLine = function( path_points, line_colour ) {
 	var i, p, path, cell_size;
 
 	if ( path_points === false ) {
@@ -112,9 +141,10 @@ PA.drawLine = function( path_points ) {
 			// do the actual drawing of the part in bounds
 			d3.select('svg').append('path')
 				.attr('d', path)
-				.attr('stroke-linejoin','round').attr('stroke-linecap','round').attr('stroke', PA.parameters.line_colour).attr('stroke-width', PA.parameters.line_width).attr('fill', 'none');
+				.attr('stroke-linejoin','round').attr('stroke-linecap','round').attr('stroke', line_colour).attr('stroke-width', PA.parameters.line_width).attr('fill', 'none');
+
 			// add the line to the export object
-			PA.export += "<path d='" + path + "' stroke-linejoin='round' stroke-linecap='round' stroke='blue' stroke-width='3' fill='none'/>\n";
+			PA.export += "<path d='" + path + "' stroke-linejoin='round' stroke-linecap='round' stroke='" + line_colour + "' stroke-width='3' fill='none'/>\n";
 
 			// reset the line path
 			path= 'M';
@@ -128,10 +158,10 @@ PA.drawLine = function( path_points ) {
 	// draw the remaining line segments
 	d3.select('svg').append('path')
 		.attr('d', path)
-		.attr('stroke-linejoin','round').attr('stroke-linecap','round').attr('stroke', PA.parameters.line_colour).attr('stroke-width', PA.parameters.line_width).attr('fill', 'none');
+		.attr('stroke-linejoin','round').attr('stroke-linecap','round').attr('stroke', line_colour).attr('stroke-width', PA.parameters.line_width).attr('fill', 'none');
 	
 	// add the line to the export object
-	PA.export += "<path d='" + path + "' stroke-linejoin='round' stroke-linecap='round' stroke='blue' stroke-width='3' fill='none' />\n";
+	PA.export += "<path d='" + path + "' stroke-linejoin='round' stroke-linecap='round' stroke='" + line_colour + "' stroke-width='3' fill='none' />\n";
 };
 
 PA.getLine = function( p, dir, locked) {
@@ -376,7 +406,7 @@ PA.getDirection = function( p, current_direction, locked ) {
 
 // reads settings then draws
 PA.prep = function() {
-	var lines, x, y, size, w, h;
+	var lines, x, y, size, w, h, line_colour, line_colour_index;
 
 	// clean up
 	// remove svg canvas
@@ -452,22 +482,41 @@ PA.prep = function() {
 	PA.grid = grid;
 
 	// ------------- Start drawing the paths ------------ //
-	// randomley seed
+    // Colouring
+    line_colour_index = 0;
+    line_colour = PA.parameters.palettes[PA.parameters.style][line_colour_index];
+
+	// randomley seed many times
 	for ( lines = PA.grid.size.w + PA.grid.size.h; lines > 0; lines = lines - 1 ) {
 		// Random
-		PA.drawBiline(parseInt(Math.random() * PA.grid.size.w, 10), parseInt(Math.random() * PA.grid.size.h, 10));
+		PA.drawBiline(parseInt(Math.random() * PA.grid.size.w, 10), parseInt(Math.random() * PA.grid.size.h, 10), line_colour);
+
+        // Colouring
+        if( PA.parameters.style === "red_eye" ) {
+            line_colour = PA.parameters.palettes[PA.parameters.style][1];
+        }
+        if( ["brewer", "saturation", "rainbow"].includes(PA.parameters.style) ) {
+            line_colour_index += 1;
+            line_colour_index = (line_colour_index === PA.parameters.palettes[PA.parameters.style].length) ? 0 : line_colour_index;
+            line_colour = PA.parameters.palettes[PA.parameters.style][line_colour_index];
+        }
 	}
 
-	//then meticulously go over space                                                                                                                                                        
+	// then meticulously go over space                                                                                                                                                        
 	for ( i = 0; i < PA.grid.size.w; i += 1 ) {
 		for ( j = 0; j < PA.grid.size.h; j += 1 ) {
-			PA.drawBiline(i, j);
+            
+			PA.drawBiline(i, j, line_colour);
+
+            // Colouring
+            if( ["brewer", "saturation", "rainbow"].includes(PA.parameters.style) ) {
+                line_colour_index += 1;
+                line_colour_index = (line_colour_index === PA.parameters.palettes[PA.parameters.style].length) ? 0 : line_colour_index;
+                line_colour = PA.parameters.palettes[PA.parameters.style][line_colour_index];
+            }
 		}
 	}
 
-	// Centred
-	//PA.drawBiline(PA.grid.size.w/2, PA.grid.size.h/2);
-	
 	// Finish the export string
 	PA.export += '</svg>';
 

@@ -33,6 +33,14 @@
                     <input type='button' onclick='mod_canvas("dh")' value='decrease height'> <input type='button' onclick='mod_canvas("ih")' value='increase height'>
                 </p>
                 <p>
+                    Palette style:<br>
+                    <input type='button' onclick='set_style("blue")' value='Blue'>
+                    <input type='button' onclick='set_style("red_eye")' value='Red eye'>
+                    <input type='button' onclick='set_style("rainbow")' value='Rainbow'>
+                    <input type='button' onclick='set_style("brewer")' value='Brewer'>
+                    <input type='button' onclick='set_style("saturation")' value='Saturation'>
+                </p>
+                <p>
                     Randomize: <input type='button' onclick='PA.prep()' value='Randomize paths'>
                 </p>
 			</div>
@@ -90,6 +98,11 @@
         }
 		PA.prep();
 	}
+
+    var set_style = function(style) {
+        PA.parameters.style = style;
+        PA.prep();
+    }
 
 	// draw the starting circuit
 	PA.prep();
