@@ -1,111 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head>
- <title>Paths</title>
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
- <link media='screen' type='text/css' href='css/paths.css' rel='stylesheet'>
- <script src="js/d3.v3.min.js"> </script>
- <script src="js/paths.js"> </script>
-</head>
-<body>
-	<div id='cont'>
-		<div id='header'>
-			<h1>Paths</h1>
-		</div>
 
-		<div id='main'>
-			<div id='intro'>
-				<p>Paths was born from work looking at space filling algorithms. It turned out to be a nice random pattern generator. Play around with the parameters and when satisfied export to a graphics program where you can adjust colours and line thickness.</p>
-				<p>Additionally you may notice that the line paths mirror/wrap perfectly in all directions. The black outline shows the clip line where the lines wrap to the other side. The exported SVG file still has this rectangle which you should remove if you plan on using the SVG for tiling as was done for the background of this page. The black outline is useful however to precisely show where to crop the image if you are using a graphics editor.</p>
-			</div>
+    <head>
+        <title>Paths</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+        <link media='screen' type='text/css' href='css/paths.css' rel='stylesheet'>
+        <script src="js/FileSaver.js" type="text/javascript"> </script>
+        <script src="js/d3.v3.min.js" type="text/javascript"> </script>
+    </head>
 
-			<div id='command'>
-                <p>
+    <body>
+        <div id='cont'>
+            <div id='header'>
+                <h1>Paths</h1>
+            </div>
+
+            <div id='main'>
+                <div id='intro'>
+                    <p>Paths was born from work looking at space filling algorithms. It turned out to be a nice random pattern generator. Play around with the parameters and when satisfied export to a graphics program where you can adjust colours and line thickness.</p>
+                    <p>Additionally you may notice that the line paths mirror/wrap perfectly in all directions. The black outline shows the clip line where the lines wrap to the other side. The exported SVG file still has this rectangle which you should remove if you plan on using the SVG for tiling as was done for the background of this page. The black outline is useful however to precisely show where to crop the image if you are using a graphics editor.</p>
+                </div>
+
+                <div id='command'>
+                    <p>
                     Cell size:<br>
-                    <input type='button' onclick='mod_cell_size("sc")' value='smaller'> <input type='button' onclick='mod_cell_size("lc")' value='larger'>
-                </p>
-                <p>
+                    <input type='button' onclick='PA.modCellSize("sc")' value='smaller'>
+                    <input type='button' onclick='PA.modCellSize("lc")' value='larger'>
+                    </p>
+                    <p>
                     Canvas width: <span id='cwval'></span><br>
-                    <input type='button' onclick='mod_canvas("dw")' value='decrease width'> <input type='button' onclick='mod_canvas("iw")' value='increase width'>
-                </p>
-                <p>
+                    <input type='button' onclick='PA.modCanvas("dw")' value='decrease width'>
+                    <input type='button' onclick='PA.modCanvas("iw")' value='increase width'>
+                    </p>
+                    <p>
                     Canvas height: <span id='chval'></span><br>
-                    <input type='button' onclick='mod_canvas("dh")' value='decrease height'> <input type='button' onclick='mod_canvas("ih")' value='increase height'>
-                </p>
-                <p>
+                    <input type='button' onclick='PA.modCanvas("dh")' value='decrease height'>
+                    <input type='button' onclick='PA.modCanvas("ih")' value='increase height'>
+                    </p>
+                    <p>
                     Palette style:<br>
-                    <input type='button' onclick='set_style("blue")' value='Blue'>
-                    <input type='button' onclick='set_style("red_eye")' value='Red eye'>
-                    <input type='button' onclick='set_style("rainbow")' value='Rainbow'>
-                    <input type='button' onclick='set_style("brewer")' value='Brewer'>
-                    <input type='button' onclick='set_style("saturation")' value='Saturation'>
-                </p>
-                <p>
+                    <input type='button' onclick='PA.setStyle("blue")' value='Blue'>
+                    <input type='button' onclick='PA.setStyle("red_eye")' value='Red eye'>
+                    <input type='button' onclick='PA.setStyle("rainbow")' value='Rainbow'>
+                    <input type='button' onclick='PA.setStyle("brewer")' value='Brewer'>
+                    <input type='button' onclick='PA.setStyle("saturation")' value='Saturation'>
+                    </p>
+                    <p>
                     Randomize: <input type='button' onclick='PA.prep()' value='Randomize paths'>
-                </p>
-			</div>
+                    </p>
+                </div>
 
-			<div id='svgcanvas'></div>
+                <div id='svgcanvas'></div>
 
-			<form method="POST" action="export.php">
-				<input id="svgexport" type="hidden" value="" name="content">
-				<input type='submit' value='Export SVG'> (only works on a PHP enabled server - not github)
-			</form>
-			<p><small>Created by Cyrille Médard de Chardon - 2013</small></p>
-		</div>
-	</div>
-</body>
-<script>
-
-	var mod_cell_size = function (op) {
-		var cols, s = PA.parameters.cell_size;
-
-		// grow and shrinks cells, check limits
-		if ( op === 'lc' && s < 128 ) {
-			PA.parameters.cell_size = s * 2;
-		}
-
-		if ( op === 'sc' && s > 4 ) {
-			PA.parameters.cell_size = s / 2;
-		}
-
-		// check cell size against canvas size
-		if ( PA.parameters.dimension.w % PA.parameters.cell_size != 0 ) {
-			PA.parameters.dimension.w = PA.parameters.cell_size * parseInt(PA.parameters.dimension.w / PA.parameters.cell_size, 10);
-		}
-		if ( PA.parameters.dimension.h % PA.parameters.cell_size != 0 ) {
-			PA.parameters.dimension.h = PA.parameters.cell_size * parseInt(PA.parameters.dimension.h / PA.parameters.cell_size, 10);
-		}
-
-		PA.prep();
-	}
-
-	var mod_canvas = function (op) {
-
-		if ( op === 'iw' && (PA.parameters.dimension.w + PA.parameters.cell_size) < 900 ) {
-			PA.parameters.dimension.w = PA.parameters.dimension.w + PA.parameters.cell_size;
-		}
-
-		if ( op === 'dw' && PA.parameters.dimension.w > 128 ) {
-			PA.parameters.dimension.w = PA.parameters.dimension.w - PA.parameters.cell_size;
-		}
-		if ( op === 'ih' && (PA.parameters.dimension.h + PA.parameters.cell_size) < 900 ) {
-			PA.parameters.dimension.h = PA.parameters.dimension.h + PA.parameters.cell_size;
-		}
-
-		if ( op === 'dh' && PA.parameters.dimension.h > 128 ) {
-			PA.parameters.dimension.h = PA.parameters.dimension.h - PA.parameters.cell_size;
-        }
-		PA.prep();
-	}
-
-    var set_style = function(style) {
-        PA.parameters.style = style;
-        PA.prep();
-    }
-
-	// draw the starting circuit
-	PA.prep();
-
-</script>
+                <form method="POST" action="export.php">
+                    <input id="svgexport" type="hidden" value="" name="content">
+                    <input id="export_btn" type='button' value='Export SVG'>
+                </form>
+                <p><small>Created by Cyrille Médard de Chardon - 2013</small></p>
+            </div>
+        </div>
+    </body>
+    <script src="js/paths.js"> </script>
 </html>
