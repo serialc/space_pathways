@@ -83,7 +83,10 @@ PA.modCanvas = function (op) {
     if ( op === 'dh' && PA.parameters.dimension.h > 128 ) {
         PA.parameters.dimension.h = PA.parameters.dimension.h - PA.parameters.cell_size;
     }
+
+
     PA.prep();
+
 };
 
 PA.drawBiline = function( x, y, line_colour ) {
@@ -465,6 +468,11 @@ PA.prep = function() {
     size = PA.parameters.cell_size
     w = PA.parameters.dimension.w / size;
     h = PA.parameters.dimension.h / size;
+
+    // display settings to user
+    document.getElementById('cwval').innerHTML = w;
+    document.getElementById('chval').innerHTML = (h + ' (ratio ' + parseInt(h/w * 100)/100 + ')');
+
 
     // set the export string
     PA.export = '<?xml version="1.0" encoding="utf-8" standalone="yes"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="' + PA.parameters.dimension.w + '" height="' + PA.parameters.dimension.h + '" viewBox="' + size + ' ' + size + ' ' + PA.parameters.dimension.w + ' ' + PA.parameters.dimension.h + '">\n';

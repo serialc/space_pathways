@@ -20,5 +20,14 @@ input {
 	width: 150px;
 }
 
+.labelw {
+    width: 8em;
+    display: inline-block;
+}
+
+.onesix {
+    width: 16%;
+}
+
 #svgcanvas {
 }

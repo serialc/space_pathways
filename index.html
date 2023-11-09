@@ -23,30 +23,35 @@
 
                 <div id='command'>
                     <p>
-                    Cell size:<br>
+                    <span class="labelw">Cell size:</span>
                     <input type='button' onclick='PA.modCellSize("sc")' value='smaller'>
                     <input type='button' onclick='PA.modCellSize("lc")' value='larger'>
                     </p>
+
                     <p>
-                    Canvas width: <span id='cwval'></span><br>
+                    <span class="labelw">Canvas width:</span>
                     <input type='button' onclick='PA.modCanvas("dw")' value='decrease width'>
                     <input type='button' onclick='PA.modCanvas("iw")' value='increase width'>
+                    <span id='cwval'></span><br>
                     </p>
+
                     <p>
-                    Canvas height: <span id='chval'></span><br>
+                    <span class="labelw">Canvas height:</span>
                     <input type='button' onclick='PA.modCanvas("dh")' value='decrease height'>
                     <input type='button' onclick='PA.modCanvas("ih")' value='increase height'>
+                    <span id='chval'></span>
+                    </p>
+
+                    <p>
+                    Palette style:
+                    <input class='onesix' type='button' onclick='PA.setStyle("blue")' value='Blue'>
+                    <input class='onesix' type='button' onclick='PA.setStyle("red_eye")' value='Red eye'>
+                    <input class='onesix' type='button' onclick='PA.setStyle("rainbow")' value='Rainbow'>
+                    <input class='onesix' type='button' onclick='PA.setStyle("brewer")' value='Brewer'>
+                    <input class='onesix' type='button' onclick='PA.setStyle("saturation")' value='Saturation'>
                     </p>
                     <p>
-                    Palette style:<br>
-                    <input type='button' onclick='PA.setStyle("blue")' value='Blue'>
-                    <input type='button' onclick='PA.setStyle("red_eye")' value='Red eye'>
-                    <input type='button' onclick='PA.setStyle("rainbow")' value='Rainbow'>
-                    <input type='button' onclick='PA.setStyle("brewer")' value='Brewer'>
-                    <input type='button' onclick='PA.setStyle("saturation")' value='Saturation'>
-                    </p>
-                    <p>
-                    Randomize: <input type='button' onclick='PA.prep()' value='Randomize paths'>
+                    <input type='button' onclick='PA.prep()' value='Randomize paths'>
                     </p>
                 </div>
 
@@ -56,7 +61,7 @@
                     <input id="svgexport" type="hidden" value="" name="content">
                     <input id="export_btn" type='button' value='Export SVG'>
                 </form>
-                <p><small>Created by Cyrille Médard de Chardon - 2013</small></p>
+                <p><small>Created by Cyrille Médard de Chardon - 2013 (and modified a little since then)</small></p>
             </div>
         </div>
     </body>
